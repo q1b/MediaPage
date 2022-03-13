@@ -1,32 +1,36 @@
-import { createEffect, on, createSignal, onMount, Switch, Match, createReaction } from "solid-js";
-import { useReactMediaRecorder } from "./mediaRecorder";
+import { createSignal, Switch, Match, createReaction, createEffect } from "solid-js";
+import { useReactMediaRecorder, StatusMessages } from "./mediaRecorder";
 import { PlayButton } from "./assets/icons/microphone";
+import { RemoveBtn } from "./assets/icons/remove";
+import { StopBtn } from "./assets/icons/stop";
+
 
 export const RecordView = () => {
-	const [previewStream, setPreviewStream] = createSignal();
 	let previewRef: HTMLVideoElement;
-
+	const [isplaying, setIsPlaying] = createSignal(false);
 	const track = createReaction(() => {
 		let stream = new MediaStream(mediaStream()?.getVideoTracks());
 		if (previewRef && stream) previewRef.srcObject = stream;
-		setPreviewStream(stream);
-	})
+	});
 
-	const { 
-		status,
-		startRecording,
-		stopRecording,
-		resumeRecording,
-		pauseRecording,
-		clearBlobUrl,
-		mediaBlobUrl,
-		mediaStream,
-	} = useReactMediaRecorder({
+	const { status, startRecording, stopRecording, resumeRecording, pauseRecording, clearBlobUrl, mediaBlobUrl, mediaStream } =
+		useReactMediaRecorder({
 			video: true,
 		});
-
 	track(() => mediaStream());
-	
+	createEffect(() => {
+		switch (status()) {
+			case "recording":
+				setIsPlaying(true);
+				break;
+			case "idle":
+				track(() => mediaStream());
+				break;
+			default:
+				setIsPlaying(false);
+				break;
+		}
+	});
 	return (
 		<div class="flex flex-col items-center justify-center">
 			<h1 class="text-white text-3xl font-bold uppercase">{status}</h1>
@@ -50,31 +54,18 @@ export const RecordView = () => {
 				</Switch>
 			</section>
 			<section class="w-full flex gap-x-4 mt-2">
-				<button
-					class="bg-white hover:scale-105 focus:scale-105 text-slate-900 px-2 py-0.5 transition-transform rounded-lg focus:outline-none"
-					onClick={startRecording}>
-					Start Recording
-				</button>
-				<button
-					class="bg-white hover:scale-105 focus:scale-105 text-slate-900 px-2 py-0.5 transition-transform rounded-lg focus:outline-none"
-					onClick={pauseRecording}>
-					Pause Recording
-				</button>
-				<button
-					class="bg-white hover:scale-105 focus:scale-105 text-slate-900 px-2 py-0.5 transition-transform rounded-lg focus:outline-none"
-					onClick={resumeRecording}>
-					Resume Recording
-				</button>
-				<button
-					class="bg-white hover:scale-105 focus:scale-105 text-slate-900 px-2 py-0.5 transition-transform rounded-lg focus:outline-none"
-					onClick={stopRecording}>
-					Stop Recording
-				</button>
-				<button
-					class="bg-white hover:scale-105 focus:scale-105 text-slate-900 px-2 py-0.5 transition-transform rounded-lg focus:outline-none"
-					onClick={clearBlobUrl}>
-					Clear Recording
-				</button>
+				<PlayButton
+					state={isplaying}
+					setState={setIsPlaying}
+					onClick={() => {
+						!isplaying() ? (
+							status() !== "paused" ? startRecording() : resumeRecording()
+						) : pauseRecording();
+					}}
+				/>
+				<StopBtn onClick={stopRecording} />
+				<RemoveBtn onClick={clearBlobUrl} />
+				{/* <RightArrowBtn/> */}
 			</section>
 		</div>
 	);

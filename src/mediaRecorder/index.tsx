@@ -1,4 +1,4 @@
-import { createSignal, createEffect, createMemo, on, JSX, Accessor, onCleanup } from "solid-js";
+import { createSignal, createEffect, createMemo, JSX, Accessor, onCleanup } from "solid-js";
 
 export type ReactMediaRecorderRenderProps = {
 	error: string;
@@ -72,8 +72,9 @@ export function useReactMediaRecorder({
 	const [isAudioMuted, setIsAudioMuted] = createSignal<boolean>(false);
 	const [mediaBlobUrl, setMediaBlobUrl] = createSignal<string | undefined>(undefined);
 	const [error, setError] = createSignal<keyof typeof RecorderErrors>("NONE");
-
-	const getMediaStream = createMemo(async () => {
+ 
+	const getMediaStream = async () => {
+		console.log("Running")
 		setStatus("acquiring_media");
 		const requiredMedia: MediaStreamConstraints = {
 			audio: typeof audio === "boolean" ? !!audio : audio,
@@ -104,20 +105,18 @@ export function useReactMediaRecorder({
 			setError(error.name);
 			setStatus("idle");
 		}
-	}, [audio, video, screen]);
-
+	};
+	getMediaStream();
 	createEffect(() => {
 		if (!window.MediaRecorder) {
 			throw new Error("Unsupported Browser");
 		}
-
 		if (screen) {
 			//@ts-ignore
 			if (!window.navigator.mediaDevices.getDisplayMedia) {
 				throw new Error("This browser doesn't support screen capturing");
 			}
 		}
-
 		const checkConstraints = (mediaType: MediaTrackConstraints) => {
 			const supportedMediaConstraints = navigator.mediaDevices.getSupportedConstraints();
 			const unSupportedConstraints = Object.keys(mediaType).filter(
@@ -162,7 +161,8 @@ export function useReactMediaRecorder({
 
 	const startRecording = async () => {
 		setError("NONE");
-		if (!mediaStream()) {
+		console.log("starting recording",!mediaStream()?.active);
+		if (!mediaStream()?.active) {
 			await getMediaStream();
 		}
 		if (mediaStream()) {
@@ -263,6 +263,7 @@ export function useReactMediaRecorder({
 				URL.revokeObjectURL(mediaBlobURL);
 			setMediaBlobUrl(undefined);
 			setStatus("idle");
+			getMediaStream();
 		},
 	};
 }

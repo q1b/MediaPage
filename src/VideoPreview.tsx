@@ -1,10 +1,12 @@
-import { PlayButton  } from "./assets/icons/play";
+import { PlayButton } from "./assets/icons/play";
 import videoURL from "./assets/vi.mp4";
 import { createEffect, createSignal } from "solid-js";
+import { RemoveBtn } from "./assets/icons/remove";
+import { Split } from "solid-split-component";
 
 export const VideoPreview = () => {
 	let videoRef: HTMLVideoElement;
-
+	let splitwindow;
 	const [isPlaying, setPlayingState] = createSignal<boolean>(false);
 	const [progress, setProgess] = createSignal<number>(0);
 	const [speed, setSpeed] = createSignal<number>(1);
@@ -20,8 +22,7 @@ export const VideoPreview = () => {
 
 	const handleOnTimeUpdate = () => {
 		const progress = (videoRef.currentTime / videoRef.duration) * 100;
-    if(progress)
-      setProgess(progress);
+		if (progress) setProgess(progress);
 	};
 
 	const handleVideoProgress = (event: any) => {
@@ -52,7 +53,7 @@ export const VideoPreview = () => {
 					ref={(el) => {
 						videoRef = el;
 					}}
-          onTimeUpdate={handleOnTimeUpdate}
+					onTimeUpdate={handleOnTimeUpdate}
 					class="w-full h-full"
 					src={videoURL}
 					controls
@@ -60,25 +61,19 @@ export const VideoPreview = () => {
 			</section>
 			<section class="w-full flex gap-x-4 mt-2"></section>
 			<section class="flex flex-col items-center">
-        <article class="w-max">
-          <PlayButton onClick={() => {
-            togglePlay()
-          }} />
-        </article>
-        <article class="text-white">
-          Progress 
-          <span>
-            {progress()}
-          </span>
-        </article>
-         <input
-            type="range"
-            min="0"
-            max="100"
-            value={progress()}
-            onChange={handleVideoProgress}
-          />
-      </section>
+				<article class="w-max">
+					<PlayButton
+						onClick={() => {
+							togglePlay();
+						}}
+					/>
+				</article>
+				<article class="text-white">
+					Progress
+					<span>{progress()}</span>
+				</article>
+				<input type="range" min="0" max="100" value={progress()} onChange={handleVideoProgress} />
+			</section>
 		</div>
 	);
 };
