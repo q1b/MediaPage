@@ -1,5 +1,5 @@
 import { VideoPreview } from "./VideoPreview";
-import { createEffect, createMemo, createSignal, mapArray, createUniqueId, on, onCleanup, onMount, createRenderEffect } from "solid-js";
+import { createEffect, createMemo, createSignal, mapArray, createUniqueId, on, onCleanup, onMount, createRenderEffect, For } from "solid-js";
 import { PlayButton } from "./assets/icons/microphone";
 import FileUpload from "./components/FileUpload";
 import { RecordView } from "./RecordView";
@@ -221,22 +221,18 @@ const App: Component = () => {
 						}}
 						class="flex flex-row w-full h-8"></div>
 					<main class="h-96 flex place-content-around w-full bg-slate-900 p-10">
-						<div class="flex flex-col gap-2">
-							<h1 class="text-yellow-300 text-3xl">Yellow Reason</h1>
-							<h2 class="text-slate-300 text-3xl">
-								<span class="truncate w-max">{mapped()[0].timestamps[0].toString().slice(0,6)} %</span>
-								to
-								<span class="truncate w-max">{mapped()[0].timestamps[1].toString().slice(0,6)}</span> %
-							</h2>
-						</div>
-						<div class="flex flex-col gap-2">
-							<h1 class="text-blue-500 text-3xl">Blue Reason</h1>
-							<h2 class="text-slate-300 text-3xl">
-								<span class="truncate w-max">{mapped()[1].timestamps[0].toString().slice(0,6)} %</span>
-								to
-								<span class="truncate w-max">{mapped()[1].timestamps[1].toString().slice(0,6)}</span> %
-							</h2>
-						</div>
+						<For each={mapped()} >
+							{(item) => (
+								<div class="flex flex-col gap-2">
+									<div style={{background:item.color}} class="text-3xl w-20 h-20 rounded-xl"></div>
+									<h2 class="text-slate-300 text-3xl">
+										<span class="truncate w-max">{item.timestamps[0].toString().slice(0,6)} %</span>
+										to
+										<span class="truncate w-max">{item.timestamps[1].toString().slice(0,6)}</span> %
+									</h2>
+								</div>
+							)}
+						</For>
 					</main>
 				</section>
 				{/* <RecordView /> */}
