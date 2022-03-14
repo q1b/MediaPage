@@ -1,25 +1,5 @@
 export default [
   [
-    '#f8fafc',
-    '#64748b',
-  ],
-  [
-    '#f9fafb',
-    '#6b7280',
-  ],
-  [
-    '#fafafa',
-    '#71717a',
-  ],
-  [
-    '#fafafa',
-    '#737373',
-  ],
-  [
-    '#fafaf9',
-    '#78716c',
-  ],
-  [
     '#fef2f2',
     '#ef4444',
   ],
@@ -87,4 +67,4 @@ export default [
     '#fff1f2',
     '#f43f5e',
   ],
-]
+].reverse()

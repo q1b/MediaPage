@@ -2,13 +2,11 @@ import { PlayButton } from "./assets/icons/play";
 import videoURL from "./assets/vi.mp4";
 import { createEffect, createSignal } from "solid-js";
 import { RemoveBtn } from "./assets/icons/remove";
-import { Split } from "solid-split-component";
 
-export const VideoPreview = () => {
+export const VideoPreview = (props:any) => {
 	let videoRef: HTMLVideoElement;
-	let splitwindow;
 	const [isPlaying, setPlayingState] = createSignal<boolean>(false);
-	const [progress, setProgess] = createSignal<number>(0);
+	const [progress, setProgess] = props.progressState;
 	const [speed, setSpeed] = createSignal<number>(1);
 	const [isMuted, setMutedState] = createSignal<boolean>(false);
 
@@ -22,6 +20,7 @@ export const VideoPreview = () => {
 
 	const handleOnTimeUpdate = () => {
 		const progress = (videoRef.currentTime / videoRef.duration) * 100;
+		console.log("duration",videoRef.duration);
 		if (progress) setProgess(progress);
 	};
 
@@ -52,6 +51,7 @@ export const VideoPreview = () => {
 					preload="auto"
 					ref={(el) => {
 						videoRef = el;
+						props.ref(el)
 					}}
 					onTimeUpdate={handleOnTimeUpdate}
 					class="w-full h-full"

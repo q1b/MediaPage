@@ -2,10 +2,13 @@ lockfileVersion: 5.3
 
 specifiers:
   '@microsoft/fast-animation': ^4.1.8
+  '@otonashixav/solid-flip': ^0.10.5
+  '@solid-primitives/raf': ^1.0.8
   autoprefixer: ^10.4.2
   heroicons: ^1.0.6
   postcss: ^8.4.8
-  solid-js: ^1.3.10
+  solid-headless: ^0.10.12
+  solid-js: ^1.3.12
   solid-split-component: ^0.1.6
   split.js: ^1.6.5
   tailwindcss: ^3.0.23
@@ -15,9 +18,12 @@ specifiers:
 
 dependencies:
   '@microsoft/fast-animation': 4.1.8
+  '@otonashixav/solid-flip': 0.10.5_solid-js@1.3.12
+  '@solid-primitives/raf': 1.0.8_solid-js@1.3.12
   heroicons: 1.0.6
-  solid-js: 1.3.10
-  solid-split-component: 0.1.6
+  solid-headless: 0.10.12_solid-js@1.3.12
+  solid-js: 1.3.12
+  solid-split-component: 0.1.6_solid-js@1.3.12
   split.js: 1.6.5
 
 devDependencies:
@@ -393,12 +399,28 @@ packages:
       fastq: 1.13.0
     dev: true
 
+  /@otonashixav/solid-flip/0.10.5_solid-js@1.3.12:
+    resolution: {integrity: sha512-Tb2n9lzuktteqm26KJ1yH9NJsY2SbgNCHWnCOAKjEWBfGfw4j31vJVG1+k11WmgP2g9YzuyS8Skr7HsFntXZWA==}
+    peerDependencies:
+      solid-js: '>=1.0.0'
+    dependencies:
+      solid-js: 1.3.12
+    dev: false
+
   /@rollup/pluginutils/4.2.0:
     resolution: {integrity: sha512-2WUyJNRkyH5p487pGnn4tWAsxhEFKN/pT8CMgHshd5H+IXkOnKvKZwsz5ZWz+YCXkleZRAU5kwbfgF8CPfDRqA==}
     engines: {node: '>= 8.0.0'}
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.1
+    dev: false
+
+  /@solid-primitives/raf/1.0.8_solid-js@1.3.12:
+    resolution: {integrity: sha512-pYsw+xeafyAzPP4SU3DofYzN7UvsYTJg/0UTnNoYkebCLl/v1ZpLGcGFiERVil/6oYQwSRilvEuGmKi7g1Xg8A==}
+    peerDependencies:
+      solid-js: ^1.3.1
+    dependencies:
+      solid-js: 1.3.12
     dev: false
 
   /@types/parse-json/4.0.0:
@@ -1245,8 +1267,23 @@ packages:
     hasBin: true
     dev: true
 
+  /solid-headless/0.10.12_solid-js@1.3.12:
+    resolution: {integrity: sha512-O9fUKM0TrAh2SpWnInXCzY8BXHgkShmXxawdBeiWuebPgb60/8ZYL22C/dqyLUAacBDD5xpiZNSz+H3ufOAHPw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
+    dependencies:
+      solid-js: 1.3.12
+      solid-use: 0.3.3_solid-js@1.3.12
+    dev: false
+
   /solid-js/1.3.10:
     resolution: {integrity: sha512-yPo86et2J4ZPtvS0SYTAYFNYH4AZF04gYCgw8WPx8+JIdBKUCgwHhHNz/6PYUO5Ng1U3kTSrTW8hRO2T9Mdrzg==}
+    dev: true
+
+  /solid-js/1.3.12:
+    resolution: {integrity: sha512-JnIoF5f40WR8LTEU1McFz/xVnXT3bGyBIme7gFbGj2ch6wXg+vcfbbhc2mz6YaLJIt8NEU+wAg8v+6SX3ZP9mA==}
+    dev: false
 
   /solid-refresh/0.4.0_solid-js@1.3.10:
     resolution: {integrity: sha512-5XCUz845n/sHPzKK2i2G2EeV61tAmzv6SqzqhXcPaYhrgzVy7nKTQaBpKK8InKrriq9Z2JFF/mguIU00t/73xw==}
@@ -1259,15 +1296,25 @@ packages:
       solid-js: 1.3.10
     dev: true
 
-  /solid-split-component/0.1.6:
+  /solid-split-component/0.1.6_solid-js@1.3.12:
     resolution: {integrity: sha512-pQSvicaoobMULvTTDGo1pAkGzTG0OoYNB9xgrhK8LLjHistWmZjCM2At/h8N1TRORF2Kpso4jKy0Zg13XCje2w==}
     peerDependencies:
       solid-js: ^1.3.7
     dependencies:
       rollup-plugin-css-only: 3.1.0
+      solid-js: 1.3.12
       split.js: 1.6.5
     transitivePeerDependencies:
       - rollup
+    dev: false
+
+  /solid-use/0.3.3_solid-js@1.3.12:
+    resolution: {integrity: sha512-94XOf4ouYrDzLLvRFw5oDEZPIaOKXCkdHFFDsCrFNUKxCtnbWJyiBP2iN90L79U6zvpzzanrjw09IKlShRdZMA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      solid-js: ^1.2
+    dependencies:
+      solid-js: 1.3.12
     dev: false
 
   /source-map-js/1.0.2:
