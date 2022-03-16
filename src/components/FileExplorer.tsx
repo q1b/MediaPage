@@ -1,11 +1,14 @@
-import { Component, createSignal, For } from "solid-js";
+import { HiOutlineChevronLeft } from "solid-icons/hi";
+import { Component, createSignal, Index, onMount } from "solid-js";
 import { InputField, inputValue, setInputValue } from "./core/🌍InputField";
+import { AddBtn, DeleteBtn, ReorderBtn } from "./parts/Btns";
 
 import store, {
 	addFile,
 	collapseFolder,
-	createNewFolder,
 	expandFolder,
+	openFile,
+	reAdjustFolders,
 	removeFile,
 	removeFolder,
 	renameFile,
@@ -94,13 +97,9 @@ export const RenamingHandler = (
 export const FileExplorer: Component = () => {
 	const [clicks, setClicks] = createSignal<number>(0);
 	const [grabedElement, setGrabElement] = createSignal<HTMLElement | null>(null);
-	let folderId = createNewFolder("Folder 1");
-	let fileId = addFile(folderId, "test");
-	addFile(folderId, "test 3");
-	let folder2 = createNewFolder("Folder 2");
-	renameFile(folderId, fileId, "test2");
-	addFile(folder2, "foltest 3");
-
+	onMount(() => {
+		// reAdjustFolders(store.foldersDetails[0].id,1);
+	});
 	return (
 		<main
 			onDragOver={(e) => {
@@ -117,7 +116,7 @@ export const FileExplorer: Component = () => {
 				}
 			}}
 			id="accordian"
-			class="flex flex-col mt-10 gap-y-3 p-2">
+			class="flex flex-col mt-5 gap-y-3 px-2">
 			{renamingState().folderId ? (
 				<InputField
 					placeholder={renamingState().placeholder || "rename"}
@@ -142,7 +141,7 @@ export const FileExplorer: Component = () => {
 					}}
 				/>
 			) : null}
-			<For each={store.foldersDetails}>
+			<Index each={store.foldersDetails}>
 				{(foldersDetail, index) => (
 					<div
 						//@ts-ignore
@@ -153,19 +152,24 @@ export const FileExplorer: Component = () => {
 						}}
 						onDragEnd={(e) => {
 							setGrabElement(null);
+							// e.currentTarget.parentElement?.childNodes.forEach((j,i)=>{
+							// 	if(j === e.currentTarget){
+							// 		reAdjustFolders(foldersDetail().id,i);
+							// 	}
+							// })
 							e.currentTarget.style.opacity = "1";
 						}}
 						id="accordianItem"
 						class="flex flex-col">
 						<div
 							class={classNames(
-								foldersDetail.isopen ? "bg-white text-slate-800" : "bg-slate-500 text-slate-100",
+								foldersDetail().isopen ? "bg-white text-slate-800" : "bg-slate-500 text-slate-100",
 								"flex px-2 rounded-lg transition-colors"
 							)}>
 							<button
 								class="w-full font-mono flex items-center"
 								// Header
-								id={foldersDetail.id}
+								id={foldersDetail().id}
 								onClick={(el) => {
 									setClicks((c) => c + 1);
 									setTimeout(() => {
@@ -173,112 +177,74 @@ export const FileExplorer: Component = () => {
 									}, 150);
 									if (clicks() === 2)
 										RenamingHandler(el.currentTarget, {
-											folderId: foldersDetail.id,
+											folderId: foldersDetail().id,
 										});
-									!foldersDetail.isopen ? expandFolder(foldersDetail.id) : collapseFolder(foldersDetail.id);
+									!foldersDetail().isopen ? expandFolder(foldersDetail().id) : collapseFolder(foldersDetail().id);
 								}}>
-								{foldersDetail.isopen ? (
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										class="h-4 w-4 pr-1"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-										stroke-width="2">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-									</svg>
-								) : (
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										class="h-4 w-4 pr-1"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-										stroke-width="2">
-										<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
-									</svg>
-								)}
-								{foldersDetail.name}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-4 w-4 transition-transform"
+									classList={{
+										"rotate-90": foldersDetail().isopen,
+										"pr-1": !foldersDetail().isopen,
+									}}
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+								</svg>
+								{foldersDetail().name}
 							</button>
-							<button
+							<AddBtn
 								title="Add File"
 								id=""
 								class=""
 								onClick={() => {
-									let fileId = addFile(foldersDetail.id, "Files");
-									RenamingHandler(null,{
-										folderId:foldersDetail.id,
+									let fileId = addFile(foldersDetail().id, "Files");
+									if (!foldersDetail().isopen) expandFolder(foldersDetail().id);
+									RenamingHandler(null, {
+										folderId: foldersDetail().id,
 										fileId,
-										inisialText:'',
-										placeholder:"filename"
-									})
-								}}>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-								</svg>
-							</button>
-							<button
+										inisialText: "",
+										placeholder: "filename",
+									});
+								}}
+							/>
+							<DeleteBtn
 								title="DeleteFolder"
 								onClick={() => {
-									removeFolder(foldersDetail.id);
+									removeFolder(foldersDetail().id);
 								}}
 								id="delete-for-folder-button"
-								class="">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2">
-									<path
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-									/>
-								</svg>
-							</button>
-							<button title="Reorder" id="" class="cursor-grab">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-5 w-5"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-								</svg>
-							</button>
+							/>
+							<ReorderBtn title="Reorder" id="" class="cursor-grab" />
 						</div>
-						{foldersDetail.isopen && foldersDetail.files.length !== 0 ? (
+						{foldersDetail().isopen && foldersDetail().files.length !== 0 ? (
 							<div id="accordian-panel">
-								<ul
-									// ref={(el) => el.classList.add("hidden")}
-									// style={{ "max-height": 0 }}
-									class="flex flex-col gap-y-3 mt-3">
-									<For each={foldersDetail.files}>
+								<ul class="flex flex-col gap-y-3 mt-3">
+									<Index each={foldersDetail().files}>
 										{(fileDetails) => (
 											<li class="flex flex-col">
-												<div class={classNames("flex bg-white text-slate-600 px-2 rounded-lg")}>
+												<div
+													class={classNames(
+														"flex px-2 rounded-lg",
+														fileDetails().isactive ? "bg-teal-300 text-white" : "bg-white text-slate-600"
+													)}>
 													<button
 														class="w-full font-mono flex items-center"
 														// Header
-														id={fileDetails.id}
+														id={fileDetails().id}
 														onClick={(el) => {
+															openFile(foldersDetail().id, fileDetails().id);
 															setClicks((c) => c + 1);
 															setTimeout(() => {
 																setClicks(0);
 															}, 150);
 															if (clicks() === 2)
 																RenamingHandler(el.currentTarget, {
-																	folderId: foldersDetail.id,
-																	fileId: fileDetails.id,
+																	folderId: foldersDetail().id,
+																	fileId: fileDetails().id,
 																});
 														}}>
 														<svg
@@ -294,40 +260,26 @@ export const FileExplorer: Component = () => {
 																d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
 															/>
 														</svg>
-														{fileDetails.name}
+														{fileDetails().name}
 													</button>
-													<button
+													<DeleteBtn
 														title="DeleteFile"
 														onClick={() => {
-															removeFile(foldersDetail.id, fileDetails.id);
+															removeFile(foldersDetail().id, fileDetails().id);
 														}}
 														id="delete-button-for-file"
 														class="hover:text-rose-500 transition-colors hover:scale-105"
-													>
-														<svg
-															xmlns="http://www.w3.org/2000/svg"
-															class="h-5 w-5"
-															fill="none"
-															viewBox="0 0 24 24"
-															stroke="currentColor"
-															stroke-width="2">
-															<path
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-															/>
-														</svg>
-													</button>
+													/>
 												</div>
 											</li>
 										)}
-									</For>
+									</Index>
 								</ul>
 							</div>
 						) : null}
 					</div>
 				)}
-			</For>
+			</Index>
 			{/* <Switch>
 					<For each={FoldersDetails}>
 						{(button, index) => (

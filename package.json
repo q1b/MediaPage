@@ -21,8 +21,11 @@
     "@microsoft/fast-animation": "^4.1.8",
     "@otonashixav/solid-flip": "^0.10.5",
     "@solid-primitives/raf": "^1.0.8",
+    "@thisbeyond/solid-dnd": "^0.4.2",
+    "axios": "^0.26.1",
     "heroicons": "^1.0.6",
     "solid-headless": "^0.10.12",
+    "solid-icons": "^0.3.3",
     "solid-js": "^1.3.12",
     "solid-split-component": "^0.1.6",
     "split.js": "^1.6.5"

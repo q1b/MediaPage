@@ -23,6 +23,7 @@ export const RemoveIcon = (props: IconOptions) => {
 		</Show>
 	);
 };
+
 export const RemoveBtn = (props: ComponentProps<'button'>) => {
 	return <MakeIconBtn
 		colors={{

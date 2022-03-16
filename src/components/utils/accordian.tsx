@@ -34,6 +34,7 @@ export function accordian(el: HTMLElement, value: () => [Accessor<boolean>]) {
 	);
 	createEffect(
 		on(isOpen, () => {
+			console.log(el.getBoundingClientRect());
 			if (!running()) start();
 			el.style.overflow = "hidden";
 			el.style.display = "";
