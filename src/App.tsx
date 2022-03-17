@@ -1,15 +1,11 @@
-import { VideoPreview } from "./VideoPreview";
-import axiosAPI from "./api";
-import { createEffect, createMemo, createSignal, mapArray, createUniqueId, on, onCleanup, onMount, For, createResource } from "solid-js";
-import { PlayButton } from "./assets/icons/microphone";
-// import FileUpload from "./components/FileUpload";
-import { RecordView } from "./RecordView";
+// change file name to APP when to see in action!
+import { createMemo, Index, Accessor, createSignal, createEffect, on, Show } from "solid-js";
 import type { Component } from "solid-js";
-import { RecordAudio } from "./RecordAudio";
-
-import { FileExplorer, RenamingHandler } from "./components/FileExplorer";
+import { FileExplorer as FolderExplorer, RenamingHandler } from "./components/FileExplorer";
 import store, { closeFile, createNewFolder, focusFile, get, removeFile } from "./components/store/FileExplorer";
-import { AddBtn, DeleteBtn } from "./components/parts/Btns";
+import { AddBtn } from "./components/parts/Btns";
+import { Portal } from "solid-js/web";
+import { RecorderDialog } from "./VideoRecorder";
 
 // const fetchToken = async () => await axiosAPI.post('auth', { email: "sukhpreetben10@gmail.com" })
 
@@ -24,111 +20,24 @@ const App: Component = () => {
 		);
 		return bu;
 	});
-
+	const [videoModel, setVideoModel] = createSignal(false);
+	const [mediaBlobURL,setMediaBlobURL] = createSignal<string>('https://mp4-b.udemycdn.com/2015-08-04_07-44-21-a367ad73645b9ac4fb6ef9da9b34f436/WebHD_1080.mp4?secure=GhS3fRImq8mGq4L03hFSow%3D%3D%2C1647516674');
+	const closeVideoModel = () => setVideoModel(false);
+	const openVideoModel = () => setVideoModel(true);
+	createEffect( on(mediaBlobURL,(v,p)=>{
+		if (typeof p === 'string' )
+			URL.revokeObjectURL(p);
+		console.log(p);
+		return mediaBlobURL();
+	}))	
 	return (
 		<div class="w-full min-h-screen bg-slate-900 flex">
 			<main class="w-max border-r-2 h-full min-h-screen flex flex-col items-start">
 				<FoldersPreview />
 			</main>
-			<section class="w-full h-full flex flex-col items-start ">
-				<div id="tabs-wrapper" class="w-full border-b-2">
-					<article class="flex gap-x-1">
-						<div class="p-2 text-white">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								aria-hidden="true"
-								class="iconify iconify--ph"
-								width="24"
-								height="24"
-								preserveAspectRatio="xMidYMid meet"
-								viewBox="0 0 256 256">
-								<path
-									fill="currentColor"
-									d="M241.9 110.6a16.2 16.2 0 0 0-13-6.6H216V88a16 16 0 0 0-16-16h-69.3l-27.8-20.8a15.6 15.6 0 0 0-9.6-3.2H40a16 16 0 0 0-16 16v144a8.2 8.2 0 0 0 1.4 4.5A7.9 7.9 0 0 0 32 216h176a8 8 0 0 0 7.6-5.5l28.5-85.4a16.3 16.3 0 0 0-2.2-14.5ZM93.3 64l27.8 20.8a15.6 15.6 0 0 0 9.6 3.2H200v16h-53.6a16 16 0 0 0-8.9 2.7L117.6 120H69.4a15.7 15.7 0 0 0-14.8 10.1L40 166.5V64Z"></path>
-							</svg>
-						</div>
-						<For each={fileTabs()}>
-							{(fileTab) => {
-								const commonClass = "flex items-center justify-center mt-2";
-								const attrs = (cls: string) => {
-									return {
-										class: commonClass + " " + cls,
-										classList: { 
-											"bg-teal-100": fileTab.isactive,
-											"bg-white": !fileTab.isactive 
-										},
-									};
-								};
-								return (
-									<div class="flex">
-										<button {...attrs("rounded-tl-md gap-x-3 px-3")} onClick={() => {
-											focusFile(fileTab.folderId,fileTab.fileId);
-										}} >
-											<span class="">
-												<svg
-													width="17"
-													height="17"
-													viewBox="0 0 17 17"
-													fill="none"
-													xmlns="http://www.w3.org/2000/svg">
-													<path
-														d="M1.94645 3.36275H0.279785V16.6961H13.6131V15.0294H1.94645V3.36275ZM16.9465 0.0294189H3.61312V13.3628H16.9465V0.0294189ZM8.61312 10.4461V2.94609L13.6131 6.69609L8.61312 10.4461Z"
-														fill="#4C8896"
-													/>
-												</svg>
-											</span>
-											<span class="">{fileTab.name}</span>
-										</button>
-										<div
-											{...attrs("rounded-tr-md pl-0.5 pr-2")}
-										>
-											<button onClick={() => {
-												closeFile(fileTab.folderId, fileTab.fileId);
-											}} class="p-1">
-												<span>
-													<svg
-														width="17"
-														height="17"
-														viewBox="0 0 20 20"
-														fill="none"
-														xmlns="http://www.w3.org/2000/svg">
-														<path
-															d="M14.1128 1.36267H5.11279C2.90365 1.36267 1.11279 3.15353 1.11279 5.36267V14.3627C1.11279 16.5718 2.90365 18.3627 5.11279 18.3627H14.1128C16.3219 18.3627 18.1128 16.5718 18.1128 14.3627V5.36267C18.1128 3.15353 16.3219 1.36267 14.1128 1.36267Z"
-															stroke="#4C8896"
-															stroke-width="2"
-															stroke-linecap="round"
-														/>
-														<path
-															d="M6.61279 6.86267L12.6128 12.8627M6.61279 12.8627L12.6128 6.86267L6.61279 12.8627Z"
-															stroke="#4C8896"
-															stroke-width="2"
-															stroke-linecap="round"
-															stroke-linejoin="round"
-														/>
-													</svg>
-												</span>
-											</button>
-										</div>
-									</div>
-								);
-							}}
-						</For>
-						<div class="rounded-t-md p-1 flex items-center gap-x-3 mt-2">
-							<span class="text-white">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									class="h-6 w-6"
-									fill="none"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-								</svg>
-							</span>
-						</div>
-					</article>
-				</div>
-				<div id="files-tabs-wrapper" class="w-full">
+			<section class="w-full flex flex-col items-start h-screen">
+				<FileExplorer fileTabsData={fileTabs} />
+				<div id="files-tabs-wrapper" class="w-full flex-none">
 					<article class="flex border-b-2 w-full">
 						<div class="p-3 text-white">
 							<svg width="32" height="32" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -151,9 +60,115 @@ const App: Component = () => {
 							</svg>
 						</div>
 					</article>
-					<article></article>
 				</div>
+				<article class="grow shrink w-full p-2 flex flex-col border-b-2">
+					<div class="
+							w-full
+							bg-white
+							shadow-2xl
+							shadow-[rgba(96,165,250,0.05)]
+							backdrop-blur-xl
+							rounded-2xl
+							grow
+							shrink
+							overflow-y-auto
+							flex items-center justify-center
+							overflow-x-hidden
+					">
+					<Show when={mediaBlobURL()}>
+						<video class="h-80 rounded-xl" src={mediaBlobURL()} controls autoplay loop ></video>
+					</Show>
+					</div>
+				</article>
+				<article id="video-controllers-group" class="flex-none border-b-2 flex flex-col w-full h-40 overflow-auto">
+					<div id="video-primary-action-group" class="w-full flex place-content-between border-b-2 p-2">
+						<div>
+							<button
+								onClick={openVideoModel}
+								class="text-indigo-500 bg-white hover:text-indigo-50 hover:bg-indigo-500 w-max h-max px-2 py-1 rounded-lg hover:scale-105 active:scale-110 transition-[colors,transform]">
+								<span class="leading-6 ">Create video</span>
+							</button>
+							{/* <button class="bg-indigo-500 px-2 py-1 text-white rounded-lg">Record Video</button> */}
+						</div>
+						<div class="flex text-white items-center gap-x-2">
+							<span>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-6 w-6"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+								</svg>
+							</span>
+							<div class="flex items-center gap-x-3">
+								<span>
+									<svg width="21" height="26" viewBox="0 0 21 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path
+											d="M0.703129 2.8373V23.3538C0.703129 24.9183 2.42604 25.8688 3.75288 25.0173L19.873 14.759C20.1552 14.5804 20.3877 14.3334 20.5488 14.0408C20.7098 13.7482 20.7943 13.4196 20.7943 13.0856C20.7943 12.7517 20.7098 12.4231 20.5488 12.1305C20.3877 11.8379 20.1552 11.5908 19.873 11.4122L3.75288 1.1738C3.45418 0.980604 3.10887 0.87161 2.75339 0.858315C2.3979 0.84502 2.04542 0.927917 1.73312 1.09826C1.42082 1.2686 1.16029 1.52008 0.979008 1.82616C0.797726 2.13223 0.702415 2.48157 0.703129 2.8373Z"
+											fill="white"
+										/>
+									</svg>
+								</span>
+								<span>00:00</span>
+							</div>
+							<span>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									class="h-6 w-6"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									stroke-width="2">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+								</svg>
+							</span>
+						</div>
+						<div>
+							<button class="bg-indigo-800 px-2 py-1 text-indigo-400 rounded-lg">Generate Video</button>
+						</div>
+					</div>
+					<div id="time-marker" class="flex">
+						<div id="left-col-of-data" class="flex flex-col w-40">
+							<div id="spacer" class="h-7 border-r-2"></div>
+							<button class="border-y-2 flex items-start px-3 py-1 border-r-2">
+								<span class="text-white">
+									Video Data
+								</span>
+							</button>
+							<div id="spacer" class="h-3 border-r-2"></div>
+							<button class="border-y-2 flex items-start px-3 py-1 border-r-2">
+								<span class="text-white">
+									Video Data
+								</span>
+							</button>
+							<div id="spacer" class="h-3 border-r-2"></div>
+						</div>
+						<div class="grow">
+							<div id="timemarkkercontainer" ref={(el) => {
+								el.addEventListener('mousedown',()=>{
+									console.log("mouseover")
+								})
+							}} class="h-7 flex items-center">
+								<div class="relative w-0 h-0 border-8 border-x-transparent border-b-transparent">
+									<div class="h-28 absolute -left-px -top-0.5 bg-white w-0.5"></div>
+								</div>
+							</div>
+							<div class="border-y-2 flex items-start px-3 py-1 border-r-2">
+								<span class="text-white">
+									Video Data
+								</span>
+							</div>
+						</div>
+					</div>
+				</article>
 			</section>
+			<Show when={videoModel()}>
+				<Portal>
+					<RecorderDialog closeEvent={closeVideoModel} setBlobURL={setMediaBlobURL} />
+				</Portal>
+			</Show>
 		</div>
 	);
 };
@@ -164,28 +179,133 @@ const FoldersPreview = () => {
 			<header class="border-b-2">
 				<div class="flex items-center justify-between px-4 py-1.5">
 					<h1 class="text-white text-xl font-bold">AI VIDEOS</h1>
-					<AddBtn class="text-white" onClick={() => {
+					<AddBtn
+						class="text-white"
+						onClick={() => {
 							let folderId = createNewFolder("newfolder");
 							RenamingHandler(null, {
 								inisialText: "",
 								placeholder: "name of folder",
 								folderId,
 							});
-						}} />
+						}}
+					/>
 				</div>
 			</header>
 			<nav class="w-64 h-full">
-				<FileExplorer />
+				<FolderExplorer />
 			</nav>
 		</section>
 	);
 };
-{
-	/* <RecordView /> */
-}
-{
-	/* <RecordAudio /> */
-}
+
+const FileExplorer = (props: {
+	fileTabsData: Accessor<
+		{
+			folderId: string;
+			fileId: string;
+			name: string;
+			isactive: boolean;
+		}[]
+	>;
+}) => {
+	const fileTabs = props.fileTabsData;
+	return (
+		<div id="tabs-wrapper" class="w-full border-b-2 flex-none">
+			<article class="flex gap-x-1">
+				<div class="p-2 text-white">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						aria-hidden="true"
+						class="iconify iconify--ph"
+						width="24"
+						height="24"
+						preserveAspectRatio="xMidYMid meet"
+						viewBox="0 0 256 256">
+						<path
+							fill="currentColor"
+							d="M241.9 110.6a16.2 16.2 0 0 0-13-6.6H216V88a16 16 0 0 0-16-16h-69.3l-27.8-20.8a15.6 15.6 0 0 0-9.6-3.2H40a16 16 0 0 0-16 16v144a8.2 8.2 0 0 0 1.4 4.5A7.9 7.9 0 0 0 32 216h176a8 8 0 0 0 7.6-5.5l28.5-85.4a16.3 16.3 0 0 0-2.2-14.5ZM93.3 64l27.8 20.8a15.6 15.6 0 0 0 9.6 3.2H200v16h-53.6a16 16 0 0 0-8.9 2.7L117.6 120H69.4a15.7 15.7 0 0 0-14.8 10.1L40 166.5V64Z"></path>
+					</svg>
+				</div>
+				<Index each={fileTabs()}>
+					{(fileTab) => {
+						const commonClass = "flex items-center justify-center mt-2";
+						const attrs = (cls: string) => {
+							return {
+								class: commonClass + " " + cls,
+								classList: {
+									"bg-teal-100": fileTab().isactive,
+									"bg-white": !fileTab().isactive,
+								},
+							};
+						};
+						return (
+							<div class="flex">
+								<button
+									{...attrs("rounded-tl-md gap-x-3 px-3")}
+									onClick={() => {
+										focusFile(fileTab().folderId, fileTab().fileId);
+									}}>
+									<span class="">
+										<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+											<path
+												d="M1.94645 3.36275H0.279785V16.6961H13.6131V15.0294H1.94645V3.36275ZM16.9465 0.0294189H3.61312V13.3628H16.9465V0.0294189ZM8.61312 10.4461V2.94609L13.6131 6.69609L8.61312 10.4461Z"
+												fill="#4C8896"
+											/>
+										</svg>
+									</span>
+									<span class="">{fileTab().name}</span>
+								</button>
+								<div {...attrs("rounded-tr-md pl-0.5 pr-2")}>
+									<button
+										onClick={() => {
+											closeFile(fileTab().folderId, fileTab().fileId);
+										}}
+										class="p-1">
+										<span>
+											<svg width="17" height="17" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+												<path
+													d="M14.1128 1.36267H5.11279C2.90365 1.36267 1.11279 3.15353 1.11279 5.36267V14.3627C1.11279 16.5718 2.90365 18.3627 5.11279 18.3627H14.1128C16.3219 18.3627 18.1128 16.5718 18.1128 14.3627V5.36267C18.1128 3.15353 16.3219 1.36267 14.1128 1.36267Z"
+													stroke="#4C8896"
+													stroke-width="2"
+													stroke-linecap="round"
+												/>
+												<path
+													d="M6.61279 6.86267L12.6128 12.8627M6.61279 12.8627L12.6128 6.86267L6.61279 12.8627Z"
+													stroke="#4C8896"
+													stroke-width="2"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												/>
+											</svg>
+										</span>
+									</button>
+								</div>
+							</div>
+						);
+					}}
+				</Index>
+				<div
+					class="rounded-t-md p-1 flex items-center gap-x-3 mt-2"
+					classList={{
+						"mt-2": fileTabs().length !== 0,
+					}}>
+					<span class="text-white">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="h-6 w-6"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+						</svg>
+					</span>
+				</div>
+			</article>
+		</div>
+	);
+};
 
 export default App;
 

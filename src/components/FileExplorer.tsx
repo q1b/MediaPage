@@ -1,4 +1,3 @@
-import { HiOutlineChevronLeft } from "solid-icons/hi";
 import { Component, createSignal, Index, onMount } from "solid-js";
 import { InputField, inputValue, setInputValue } from "./core/🌍InputField";
 import { AddBtn, DeleteBtn, ReorderBtn } from "./parts/Btns";
@@ -8,7 +7,6 @@ import store, {
 	collapseFolder,
 	expandFolder,
 	openFile,
-	reAdjustFolders,
 	removeFile,
 	removeFolder,
 	renameFile,
@@ -228,8 +226,8 @@ export const FileExplorer: Component = () => {
 											<li class="flex flex-col">
 												<div
 													class={classNames(
-														"flex px-2 rounded-lg",
-														fileDetails().isactive ? "bg-teal-300 text-white" : "bg-white text-slate-600"
+														"flex px-2 rounded-lg drop-shadow-sm",
+														fileDetails().isactive ? "bg-cyan-500 text-white" : "bg-white text-slate-600"
 													)}>
 													<button
 														class="w-full font-mono flex items-center"
