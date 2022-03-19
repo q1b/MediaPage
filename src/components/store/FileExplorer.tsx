@@ -11,10 +11,7 @@ export function createLocalStorageSignal<T extends object>(
 
 export function createLocalStorageSignal<T extends object>(key: string): [Accessor<T>, Setter<T>] {
 	const storage = window.localStorage;
-	const initialValue: T = JSON.parse(
-		storage.getItem(key) ??
-			`{"value":{"foldersDetails":[{"id":"1vqpj6cpo020b2hr8k7aocl-0","name":"first Item","isopen":true,"files":[{"id":"1mol0cf1f7n4gr4gcl-1","name":"first file","isactive":false,"index":0}],"index":0}]}}`
-	).value;
+	let initialValue: T = JSON.parse( storage.getItem(key) ?? `{"value":{"foldersDetails":[{"id":"hdtcpj6e0tqb4abquqv8cl-2","name":"first","isopen":true,"files":[{"id":"jrhspj6e0koueoasep88cl-3","name":"new Item","isactive":false,"isopen":true,"folderId":"hdtcpj6e0tqb4abquqv8cl-2","index":0},{"id":"6bpcpj6c00vdv7qhncc8cl-2","name":"secod t","isactive":true,"isopen":true,"folderId":"hdtcpj6e0tqb4abquqv8cl-2","index":1}],"index":0}],"activeFileDetails":{"fileId":"6bpcpj6c00vdv7qhncc8cl-2","folderId":"hdtcpj6e0tqb4abquqv8cl-2"},"prevActiveFileDetails":{"fileId":"v47j6cpj07n8kvmt1begcl-1","folderId":"25amcpj6g07272085t0p8cl-0"}}}` ).value;
 	const [value, setValue] = createSignal<T>(initialValue);
 	const newSetValue = (newValue: T | ((v: T) => T)): T => {
 		//@ts-ignore
@@ -76,7 +73,13 @@ type FoldersStore = {
 	};
 };
 
-export const [get, set] = createLocalStorageSignal<FoldersStore>("lunchAI");
+const key = 'lunchAI';
+if( !(key in localStorage) ) {
+	console.log("Running")
+	localStorage.setItem(key,`{"value":{"foldersDetails":[{"id":"hdtcpj6e0tqb4abquqv8cl-2","name":"first","isopen":true,"files":[{"id":"jrhspj6e0koueoasep88cl-3","name":"new Item","isactive":false,"isopen":true,"folderId":"hdtcpj6e0tqb4abquqv8cl-2","index":0},{"id":"6bpcpj6c00vdv7qhncc8cl-2","name":"secod t","isactive":true,"isopen":true,"folderId":"hdtcpj6e0tqb4abquqv8cl-2","index":1}],"index":0}],"activeFileDetails":{"fileId":"6bpcpj6c00vdv7qhncc8cl-2","folderId":"hdtcpj6e0tqb4abquqv8cl-2"},"prevActiveFileDetails":{"fileId":"v47j6cpj07n8kvmt1begcl-1","folderId":"25amcpj6g07272085t0p8cl-0"}}}`);
+}
+
+export const [get, set] = createLocalStorageSignal<FoldersStore>(key);
 
 const [store, setStore] = createStore<{
 	foldersDetails: Required<FolderDetails>[];

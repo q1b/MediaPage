@@ -298,13 +298,11 @@ export const FileExplorer: Component = () => {
 									id=""
 									class=""
 									onClick={(el) => {
-										el.preventDefault();
-										el.stopPropagation()
 										if (!foldersDetail().isopen ) {
 											expandFolder(foldersDetail().id);
 											setAnimationState("expanding");
 										};
-										if(( foldersDetail.length === 0 || animationState() === 'expanded' || animationState() === 'added' ) && animationState() !== 'adding'){
+										if(( foldersDetail.length === 0 || animationState() === 'expanded' || animationState() === 'added' ) && animationState() !== 'adding')  {
 											let height = getHeight(panelRef);
 											console.log(height)
 											setPrevHeight(height);
