@@ -212,7 +212,6 @@ export const RecorderDialog = (props: { closeEvent: any, setBlobURL: any }) => {
 			}
 		);
 		bottomControllerAnimation.onfinish = () => bottomControllerAnimation.cancel();
-		props.setBlobURL(mediaBlobUrl());
 	}	
 	return (
 		<section
@@ -274,6 +273,7 @@ export const RecorderDialog = (props: { closeEvent: any, setBlobURL: any }) => {
 						<div ref={(el: HTMLDivElement) => (bottomControllerRef = el)} class="bg-white flex items-center px-2 py-1.5 my-4 rounded-lg">
 							<TickBtn onClick={() => {
 								onExit();
+								props.setBlobURL(mediaBlobUrl());
 								setTimeout(() => {
 									props.closeEvent();
 								}, 500);

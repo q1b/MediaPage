@@ -251,11 +251,7 @@ export const TimeCheck = () => {
 							setProgess(manualChange);
 						}}
 					/>
-					<div
-						ref={(el) => {
-							container = el;
-						}}
-						class="flex flex-row w-full h-8"></div>
+					<div ref={(el) => container = el} class="flex flex-row w-full h-8"></div>
 					<main class=" h-full min-h-96 flex place-content-around w-full bg-slate-900 p-10 flex-wrap">
 						<For each={mapped()}>
 							{(item) => (

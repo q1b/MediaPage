@@ -13,7 +13,7 @@ export const VideoPreview = (props:any) => {
 	const togglePlay = () => {
 		setPlayingState(!isPlaying());
 	};
-
+	
 	createEffect(() => {
 		isPlaying() ? videoRef.play() : videoRef.pause();
 	});

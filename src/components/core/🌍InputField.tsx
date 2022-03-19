@@ -14,11 +14,10 @@ export const InputField = (props: InputProps<PropsWithChildren<ComponentProps<'i
 	const [local,other] = splitProps(props,['onDone','onClose','placeholder']);
 	let inputRef: HTMLInputElement;
 	let keyDownHandler = (e:KeyboardEvent)=>{
-			if(document.activeElement !== inputRef){
+			if(document.activeElement !== inputRef) {
 				inputRef.focus();
 			}
-			if(e.key === 'Enter'){
-				console.log('Enter')
+			if(e.key === 'Enter') {
 				local.onDone();
 			}
 		};
@@ -31,7 +30,7 @@ export const InputField = (props: InputProps<PropsWithChildren<ComponentProps<'i
 	})
 	return (
 		<InsertBeforeApp>
-			<div class="absolute flex items-center justify-end bg-slate-800">
+			<div class="absolute z-10 flex items-center justify-end bg-slate-800">
 				<input
 					// class="bg-transparent text-slate-800 focus:outline-none focus:bg-white focus:scale-105 focus:-translate-x-1 rounded-l-lg pl-1"
 					class="w-full bg-transparent placeholder:text-slate-500 text-white focus:outline-none pl-1"
